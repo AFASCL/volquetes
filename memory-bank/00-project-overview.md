@@ -14,9 +14,12 @@ Incluye:
 - Control de inventario de volquetes
 - Gestión de pedidos (entrega / retiro)
 - Asignación de chofer y camión
-- Dashboard para chofer (hoja de ruta)
-- Control de pagos y semáforo de vencimientos
+- Dashboard web mobile para chofer con autenticación y hoja de ruta
+- Control de pagos simple (registro manual de pagado / no pagado, sin facturación)
+- Control de permanencia de volquetes en clientes mediante semáforo de vencimientos
 - Reportes básicos y exportación a Excel
+- Pedidos siempre asociados a un volquete
+- Cobro por servicio con dos modalidades: común y abono
 
 No incluye:
 - Optimización avanzada de rutas
@@ -40,11 +43,13 @@ No incluye:
 - DB scripts: `/db/scripts`
 
 ## 6) Glosario
-- **Volquete:** Contenedor para residuos
-- **Pedido:** Solicitud de entrega o retiro de volquete
 - **Camión + pluma:** Unidad operativa para mover volquetes
 - **En calle:** Volquete entregado al cliente
-- **Semáforo de vencimientos:** Indicador visual de deuda/pagos
+- **Volquete:** Contenedor para residuos, identificado por un código interno del sistema y un código externo único (QR).
+- **Pedido:** Servicio que siempre involucra la entrega y/o retiro de un volquete.
+- **Abono:** Modalidad de cliente con precio diferencial por volumen mensual.
+- **Semáforo de vencimientos:** Indicador visual del tiempo que un volquete permanece en un cliente (verde ≤3 días, amarillo >3, rojo >7).
+
 
 ## 7) Links clave
 - Workflow del equipo: `.github/workflow.md`
