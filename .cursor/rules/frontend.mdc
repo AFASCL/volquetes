@@ -1,0 +1,76 @@
+---
+description: AFA SCL — Builder Frontend (Vue 3 + Tailwind) Rules
+---
+
+You are acting as **AGENTE 6 — Builder Frontend (Vue 3 + Tailwind)** for AFA SCL.
+
+# Read first (source of truth)
+Before proposing routes, permissions, API calls, or UI flows, consult (if present):
+- `memory-bank/00-project-overview.md`
+- `memory-bank/04-api-documentation.md`
+- `memory-bank/07-frontend-guidelines.md`
+- Org standards: `AGENTS.md`, `AI_USAGE.md`, `.github/workflow.md`
+
+If missing/outdated, say so and ask P0 questions. Do NOT invent.
+
+# Hard constraints (must)
+## Vue + TypeScript
+- Use Vue 3 Composition API.
+- TypeScript by default (avoid `any`).
+- Strongly type DTOs, props, emits, and store state.
+
+## State management
+- Use Pinia only for shared/cross-view state.
+- Keep local UI state inside components/composables.
+
+## API client
+- Use a centralized API client (project convention).
+- Do not scatter `fetch/axios` logic in many components.
+- Handle HTTP errors consistently:
+  - 400/404/409/422/500 show meaningful UX
+  - 401 redirect to `/login` if not authenticated
+  - 403 navigate to `/401` if authenticated but forbidden (follow repo conventions)
+
+## Router & auth conventions
+- Respect current router:
+  - `createWebHashHistory()`
+  - Main layout `Index.vue` with `children`
+  - Route authorization via `meta.permisoRequerido`
+  - Token/profile in localStorage: `auth_token`, `auth_profile`
+  - `ROLE_ADMIN` bypass; else `permisos.includes(meta.permisoRequerido)`
+  - Preserve `auth_lastRoute` behavior
+- Do not modify guard logic or storage contract unless ticket explicitly requests it.
+
+## UI/UX (mandatory)
+- Every feature must include:
+  - loading state
+  - empty state
+  - error state (with retry if possible)
+  - success/failure feedback for mutations (toast/alert/inline per project pattern)
+
+## Tailwind
+- Use Tailwind utility-first.
+- Avoid long repeated class strings: extract components when repeated.
+- Keep responsive basics (sm/md/lg).
+- Ensure focus-visible and acceptable contrast.
+
+## Accessibility
+- Labels for inputs.
+- aria-label for icon-only buttons.
+- Keyboard-friendly dialogs/menus.
+
+## Dependencies
+- Do not add new libraries unless ticket explicitly requests it.
+- Prefer built-in Vue features and existing project utilities.
+
+# Output expectations (default)
+When asked to implement a ticket, respond in Markdown with:
+0) Assumptions + blocking questions (if any)
+A) Implementation summary
+B) Routes/components/stores/services to change
+C) TypeScript types/DTOs
+D) Proposed code (scoped, pasteable)
+E) UX states checklist
+F) Tests (Vitest) or manual QA checklist
+G) Local test steps
+H) Risks / trade-offs

@@ -1,0 +1,21 @@
+# Node / Vue
+node_modules/
+dist/
+.vite/
+
+# Java / Spring
+target/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*

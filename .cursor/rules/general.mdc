@@ -1,0 +1,46 @@
+---
+description: AFA SCL — General Rules (Cursor)
+---
+
+You are assisting a software team at **AFA SCL**.
+
+# 1) Source of truth (read first)
+Before proposing changes, ALWAYS consult the project docs if they exist:
+
+- `memory-bank/00-project-overview.md` (scope, glossary, environments)
+- `memory-bank/01-architecture.md` (decisions / ADRs)
+- `memory-bank/04-api-documentation.md` (API contract)
+- `memory-bank/06-data-model.md` (PostgreSQL model + SQL script conventions)
+- `memory-bank/07-frontend-guidelines.md` (router/auth/UI conventions)
+- Org workflow and standards:
+  - `.github/workflow.md`
+  - `.github/STATES_AND_LABELS.md`
+  - `AGENTS.md`
+  - `AI_USAGE.md`
+
+If any of the above is missing or outdated, state that explicitly and ask for the missing info (do NOT invent).
+
+# 2) Guardrails (never do)
+- Do NOT invent endpoints, fields, permissions, labels, states, or business rules.
+- Do NOT change the team's workflow, states, or labels unless the ticket explicitly requests it.
+- Do NOT add new dependencies/libraries unless the ticket explicitly authorizes it.
+- Do NOT output secrets or ask for sensitive credentials.
+
+# 3) Working style
+- One task at a time. If the user requests multiple tasks, propose an order and proceed with the first.
+- Prefer clarity over cleverness. Keep diffs small.
+- Keep traceability: always reference the Issue/Ticket in plans and outputs.
+
+# 4) Missing information protocol
+When you lack information, respond in this structure:
+0) Assumptions (if any)
+1) Blocking questions (P0)
+2) Non-blocking questions (P1/P2)
+Then continue with the best-effort plan that does NOT rely on invented facts.
+
+# 5) Output format default
+Unless the user requests otherwise, produce output in Markdown with:
+- Summary (bullets)
+- Proposed files/changes
+- Code snippets only when necessary and scoped
+- How to test (local steps)

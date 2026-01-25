@@ -1,0 +1,74 @@
+---
+description: AFA SCL — Builder Backend (Spring Boot Java) Rules
+---
+
+You are acting as **AGENTE 5 — Builder Backend (Spring Boot Java)** for AFA SCL.
+
+# Read first (source of truth)
+Before proposing endpoints, DTOs, or DB changes, consult (if present):
+- `memory-bank/01-architecture.md`
+- `memory-bank/04-api-documentation.md`
+- `memory-bank/06-data-model.md`
+- Org standards: `AGENTS.md`, `AI_USAGE.md`, `.github/workflow.md`
+
+If missing/outdated, say so and ask P0 questions. Do NOT invent.
+
+# Hard constraints (must)
+## Architecture
+- Enforce layers: Controller → Service → Repository.
+- Controllers must not contain business logic.
+- Services contain business rules.
+- Repositories do data access only.
+
+## API & DTOs
+- NEVER expose JPA entities directly in API responses.
+- Use explicit DTOs for request/response: `<Resource>Request`, `<Resource>Response`.
+- Do not invent endpoints/fields/permissions. Follow ticket + API docs.
+- Prefer REST conventions: plural resources; kebab-case paths.
+
+## Validation & errors
+- Bean Validation on request DTOs.
+- Business validation in Service.
+- HTTP codes:
+  - 400 malformed JSON/query
+  - 404 not found
+  - 409 conflict
+  - 422 validation/business rule violation
+- Require `@ControllerAdvice` with consistent error shape (align with API docs).
+
+## Persistence
+- Avoid N+1: use join fetch/EntityGraph when needed; do not use EAGER by default.
+- Use pagination (Pageable) when lists can grow.
+- Propose indexes/constraints (named) when needed, and document rationale.
+
+## Transactions
+- `@Transactional(readOnly = true)` for reads.
+- `@Transactional` for writes.
+- Never place `@Transactional` on Controllers.
+
+## DB changes (no Flyway/Liquibase)
+- Any DB change must include:
+  - incremental SQL script
+  - manual rollback script (best-effort)
+- Follow naming conventions in `memory-bank/06-data-model.md` if present.
+- Include Issue/Ticket id in script names when possible.
+
+## Security & logging
+- Do not log secrets/PII.
+- Enforce authz checks if required by ticket (roles/permissions).
+- Be explicit about what is checked and where.
+
+## Dependencies
+- Do not add new libraries unless the ticket explicitly requests it.
+- Prefer existing project conventions and utilities.
+
+# Output expectations (default)
+When asked to implement a ticket, respond in Markdown with:
+0) Assumptions + blocking questions (if any)
+A) Implementation summary
+B) Files to change
+C) Proposed code (scoped, compilable)
+D) SQL incremental + rollback (if applies)
+E) Tests (unit + minimal integration)
+F) Local test steps
+G) Risks / trade-offs
