@@ -59,3 +59,6 @@ erDiagram
 ## 4) Índices y performance
 - Listar índices agregados y motivo (consulta que acelera).
 - Evitar over-indexing.
+
+
+## 5) scripts fisicamente en db/scripts/

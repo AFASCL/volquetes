@@ -4,43 +4,116 @@ description: AFA SCL — General Rules (Cursor)
 
 You are assisting a software team at **AFA SCL**.
 
+These rules apply to **all uses of Cursor AI** in this repository.
+They are mandatory and override default model behavior.
+
+---
+
 # 1) Source of truth (read first)
-Before proposing changes, ALWAYS consult the project docs if they exist:
+
+Before proposing or applying any change, ALWAYS consult the project documentation if it exists:
 
 - `memory-bank/00-project-overview.md` (scope, glossary, environments)
-- `memory-bank/01-architecture.md` (decisions / ADRs)
-- `memory-bank/04-api-documentation.md` (API contract)
-- `memory-bank/06-data-model.md` (PostgreSQL model + SQL script conventions)
-- `memory-bank/07-frontend-guidelines.md` (router/auth/UI conventions)
-- Org workflow and standards:
-  - `.github/workflow.md`
-  - `.github/STATES_AND_LABELS.md`
-  - `AGENTS.md`
-  - `AI_USAGE.md`
+- `memory-bank/01-architecture.md` (architecture decisions / ADRs)
+- `memory-bank/04-api-documentation.md` (API contracts)
+- `memory-bank/06-data-model.md` (PostgreSQL model + SQL conventions)
+- `memory-bank/07-frontend-guidelines.md` (router, auth, UI conventions)
 
-If any of the above is missing or outdated, state that explicitly and ask for the missing info (do NOT invent).
+Team and org standards:
+- `.github/workflow.md`
+- `.github/STATES_AND_LABELS.md`
+- `AGENTS.md`
+- `AI_USAGE.md`
 
-# 2) Guardrails (never do)
+If any of the above is missing, outdated, or contradictory:
+- Explicitly state it
+- Ask for clarification
+- **Do NOT invent or assume**
+
+---
+
+# 2) Memory Bank policy (mandatory)
+
+The `memory-bank/` directory is the **living source of truth** for the project.
+
+Rules:
+- Always read the relevant memory-bank files before proposing changes.
+- If a task impacts:
+  - API contracts → update `memory-bank/04-api-documentation.md`
+  - Database schema / constraints → update `memory-bank/06-data-model.md`
+  - Architecture or cross-cutting decisions → update `memory-bank/01-architecture.md`
+  - Functional flow or scope → update `memory-bank/00-project-overview.md`
+
+Documentation updates must:
+- Be done in the **same working session** as the change
+- Touch **only the relevant section**
+- Avoid rewriting or reformatting unrelated content
+- Use `TODO` / `PENDIENTE` if information is missing
+
+Never leave API/DB changes undocumented.
+
+---
+
+# 3) Guardrails (never do)
+
 - Do NOT invent endpoints, fields, permissions, labels, states, or business rules.
-- Do NOT change the team's workflow, states, or labels unless the ticket explicitly requests it.
-- Do NOT add new dependencies/libraries unless the ticket explicitly authorizes it.
-- Do NOT output secrets or ask for sensitive credentials.
+- Do NOT change the team workflow, statuses, or labels unless explicitly requested.
+- Do NOT add new dependencies, libraries, or frameworks unless authorized by the ticket.
+- Do NOT expose secrets or request sensitive credentials.
+- Do NOT modify files outside the scope of the task.
 
-# 3) Working style
-- One task at a time. If the user requests multiple tasks, propose an order and proceed with the first.
-- Prefer clarity over cleverness. Keep diffs small.
-- Keep traceability: always reference the Issue/Ticket in plans and outputs.
+---
 
-# 4) Missing information protocol
-When you lack information, respond in this structure:
-0) Assumptions (if any)
+# 4) Working style
+
+- One task at a time.
+- If multiple tasks are requested, propose an execution order and start with the first.
+- Prefer clarity over cleverness.
+- Keep diffs small, focused, and reviewable.
+- Maintain traceability:
+  - Reference the Issue/Ticket in plans, comments, and scripts.
+
+---
+
+# 5) Agent usage
+
+Respect the agent responsibilities defined in `AGENTS.md`.
+
+Guidelines:
+- Planning and architecture → use **Ask mode**
+- Code implementation and doc updates → use **Agent mode**
+- Never implement code when acting as a planning or architecture agent.
+- When in Agent mode:
+  - Show diffs or clearly describe file changes before finalizing
+
+---
+
+# 6) Missing information protocol
+
+When required information is missing, respond using this structure:
+
+0) Assumptions (explicit, minimal)
 1) Blocking questions (P0)
-2) Non-blocking questions (P1/P2)
-Then continue with the best-effort plan that does NOT rely on invented facts.
+2) Non-blocking questions (P1 / P2)
 
-# 5) Output format default
-Unless the user requests otherwise, produce output in Markdown with:
-- Summary (bullets)
-- Proposed files/changes
-- Code snippets only when necessary and scoped
+Then continue with a **best-effort plan** that does NOT rely on invented facts.
+
+---
+
+# 7) Output format (default)
+
+Unless explicitly requested otherwise, output in Markdown with:
+
+- Summary (bullet points)
+- Proposed files / sections to change
+- Scoped code snippets (only if necessary)
 - How to test (local steps)
+
+---
+
+# 8) Final rule
+
+The AI accelerates execution.  
+Humans make decisions.  
+The Project and memory-bank define reality.
+
