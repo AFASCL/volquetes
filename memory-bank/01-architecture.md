@@ -21,6 +21,7 @@ flowchart LR
 - Capas: Controller → Service → Repository
 - DTOs request/response (no exponer entidades JPA)
 - Errores consistentes vía @ControllerAdvice
+- **Seguridad:** PENDIENTE — auth/authz no implementado; endpoints abiertos. Restringir a Admin cuando se defina (memory-bank).
 
 ### Frontend
 - Composition API + TS por defecto

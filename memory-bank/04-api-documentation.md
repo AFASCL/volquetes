@@ -34,7 +34,7 @@ Recurso: `/api/clientes` (plural). Solo campos definidos: nombre/razón social, 
   "content": [
     {
       "id": 1,
-      "razonSocial": "string",
+      "nombre": "string",
       "telefono": "string",
       "email": "string",
       "direccionPrincipal": "string",
@@ -56,7 +56,7 @@ Recurso: `/api/clientes` (plural). Solo campos definidos: nombre/razón social, 
 - Response 200:
 ```json
 [
-  { "id": 1, "razonSocial": "string", "tipo": "COMUN" }
+  { "id": 1, "nombre": "string", "tipo": "COMUN" }
 ]
 ```
 - Errores: 401/403
@@ -83,7 +83,7 @@ Recurso: `/api/clientes` (plural). Solo campos definidos: nombre/razón social, 
 - Request:
 ```json
 {
-  "razonSocial": "string",
+  "nombre": "string",
   "telefono": "string",
   "email": "string",
   "direccionPrincipal": "string",
