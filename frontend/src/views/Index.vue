@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 </script>
 
 <template>
@@ -13,6 +16,13 @@ import { RouterLink, RouterView } from 'vue-router'
             class="text-gray-600 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
           >
             Inicio
+          </RouterLink>
+          <RouterLink
+            v-if="auth.hasRoleAdmin"
+            to="/clientes"
+            class="text-gray-600 hover:text-gray-900 focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+          >
+            Clientes
           </RouterLink>
         </div>
       </nav>

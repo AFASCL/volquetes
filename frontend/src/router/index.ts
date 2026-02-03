@@ -50,6 +50,11 @@ const router = createRouter({
           component: () => import('@/views/HomeView.vue'),
           meta: { permisoRequerido: 'HOME' },
         },
+        {
+          path: 'clientes',
+          name: 'clientes',
+          component: () => import('@/views/ClientesAbm.vue'),
+        },
       ],
     },
     {

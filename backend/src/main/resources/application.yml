@@ -37,3 +37,7 @@ logging:
     root: INFO
     com.afascl: INFO
     org.hibernate.SQL: DEBUG
+
+# CORS: orígenes permitidos para el frontend (default: Vite en 5173)
+# cors:
+#   allowed-origins: http://localhost:5173
