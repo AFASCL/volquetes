@@ -1,6 +1,7 @@
-# Resumen de prompts — Volquetes (entrega curso AI Engineer)
+# Resumen de prompts — Volquetes (entrega maestría)
 
-Documentación del uso de IA en el proyecto: agente, contexto, input resumido, output y decisión humana.
+**Requisito:** documentar interacciones con IA: herramienta consultada, input (prompt) y output.  
+Cada fila enlaza a una ficha en `prompts/` donde están el **input completo o resumido** y el **output** (o extractos).
 
 ---
 
@@ -56,6 +57,45 @@ Documentación del uso de IA en el proyecto: agente, contexto, input resumido, o
 
 ---
 
+## 5. Backlog Triage — Inventario de Volquetes
+
+| Campo | Valor |
+|-------|--------|
+| **Agente** | Agente 0 (Backlog Triage & Grooming) |
+| **Herramienta** | Cursor |
+| **Input** | Contexto v1 + feature Inventario (ABM + estados + QR); requerimiento crudo: ABM, código interno/externo, estados Disponible/En cliente/En tránsito/Fuera de servicio, vista estado, reportes Excel si aplica. |
+| **Output** | Tickets T1–T6 (DB, API CRUD, Frontend ABM, actualización estado, vista estado+filtros, export Excel); criterios Given/When/Then; P0/P1/P2; orden y milestones. |
+| **Decisión humana** | Pendiente de revisión. |
+| **Detalle** | [prompts/resumenPrompts5_backlog-triage_volquetes.md](prompts/resumenPrompts5_backlog-triage_volquetes.md) |
+
+---
+
+## 6. Tech Planning — Inventario de Volquetes (T1–T6)
+
+| Campo | Valor |
+|-------|--------|
+| **Agente** | Agente 3 (Tech Planner) |
+| **Herramienta** | Cursor |
+| **Input** | Feature Inventario de Volquetes; output Agente 0 (T1–T6); P0 cerradas: estados DISPONIBLE/EN_CLIENTE/EN_TRANSITO/FUERA_DE_SERVICIO, QR en UI desde codigoExterno, EN_TRANSITO sin pedido, historial de estado. |
+| **Output** | Plan técnico ejecutable: T1–T6 con objetivo, alcance, criterios Given/When/Then, tareas técnicas, DoD, labels, dependencias y blocked; Markdown listo para GitHub. |
+| **Decisión humana** | Pendiente de cargar en GitHub/board. |
+| **Detalle** | [prompts/resumenPrompts6_tech-planner_volquetes.md](prompts/resumenPrompts6_tech-planner_volquetes.md) |
+
+---
+
+## 7. Arquitectura — Inventario de Volquetes (T1 + T2)
+
+| Campo | Valor |
+|-------|--------|
+| **Agente** | Agente 4 (Architect) |
+| **Herramienta** | Cursor |
+| **Input** | Feature Inventario de Volquetes; fuentes memory-bank + general.mdc; contexto: estados DISPONIBLE/EN_CLIENTE/EN_TRANSITO/FUERA_DE_SERVICIO, QR en UI desde codigoExterno, historial de estado; entregables: modelo de datos, contrato API, ADRs, memory-bank a actualizar. Sin código ni issues. |
+| **Output** | docs/arch-inventario-volquetes-t1-t2.md: tablas volquetes y volquete_estado_historial (PK, FK, constraints, índices), CRUD + PATCH estado, DTOs, códigos de error, 3 ADRs (VARCHAR/CHECK, historial separado, estado denormalizado), secciones de 04/06/01 a actualizar. |
+| **Decisión humana** | Pendiente: aceptar diseño y actualizar memory-bank al implementar T1/T2. |
+| **Detalle** | [prompts/2026-02-03_architect_volquetes.md](prompts/2026-02-03_architect_volquetes.md) |
+
+---
+
 ## Otros usos de IA (sin archivo detallado aún)
 
 - **Esqueleto backend** (Spring Boot 3, Java 21, Maven, health, ControllerAdvice): Agente 5 — Builder Backend.
@@ -63,4 +103,13 @@ Documentación del uso de IA en el proyecto: agente, contexto, input resumido, o
 - **Alineación contrato** (memory-bank 04 y 06 con campo `nombre`): actualización según Architect/Backend.
 - **Esqueleto frontend** (Vue 3, Router, Pinia, Tailwind, Login/Index/Home/Errores, API client): Agente 6 — Builder Frontend.
 
-*(Podés agregar entradas en prompts/ para estos y una fila aquí cuando quieras documentarlos para la entrega.)*
+*(Podés agregar entradas en prompts/ para estos y una fila aquí cuando quieras documentarlos.)*
+
+---
+
+## Para la entrega de la maestría
+
+- En cada ficha de **prompts/** completá **Input (prompt)** con el texto real que enviaste (o un resumen fiel) y **Output** con la respuesta de la IA (completa o extractos clave).
+- Donde hoy dice solo "Enunciado inicial" o "Issue P0", reemplazá por el prompt tal como lo pegaste en la herramienta.
+- Usá **prompts/PLANTILLA-entrada.md** para nuevas interacciones.
+- Con eso tenés la evidencia: **a cuál consulté**, **qué le pregunté** y **qué me respondió**.

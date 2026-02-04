@@ -10,8 +10,13 @@ spring:
     password: ${DB_PASSWORD:test123}
     driver-class-name: org.postgresql.Driver
     hikari:
-      connection-timeout: 5000
       maximum-pool-size: 10
+      minimum-idle: 1
+      idle-timeout: 600000       # 10 min
+      max-lifetime: 1200000      # 20 min  (más corto para evitar conexiones muertas)
+      connection-timeout: 30000  # 30s
+      validation-timeout: 5000
+      keepalive-time: 300000     # 5 min (opcional, ayuda con idle)
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -26,6 +31,8 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+
+
 
 server:
   port: ${SERVER_PORT:8080}

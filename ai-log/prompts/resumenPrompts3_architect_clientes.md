@@ -1,39 +1,43 @@
 # Arquitectura — Clientes (PRD v1)
 
-## IA utilizada
-Cursor 2.4x — **Agente 4 (Architect)**
+## Herramienta consultada
+Cursor 2.4 — Agente 4 (Architect), según AGENTS.md.
 
-## Contexto
-Definición de la arquitectura técnica para el feature **Gestión de Clientes** del sistema de Volquetes (v1), a partir de:
-- Issue P0: Gestión de Clientes (ABM + tipo común/abono)
-- Tech Plan (T1 DB, T2 Backend, T3 Frontend, T4 Integración)
+## Input (prompt)
 
-## Input entregado a la IA
-- Issue P0 completo (objetivo, alcance, criterios de aceptación)
-- Tech Plan T1–T4
-- Restricciones del proyecto (Spring Boot, PostgreSQL 16+, Vue 3)
-- Reglas de no-invención y alcance v1 (pago manual, cliente común/abono)
+Actuá como Agente 4 — Architect. Definí el diseño técnico para el recurso Clientes según el Issue:
 
-## Output generado por la IA
-- Modelo de datos para **tabla clientes** (campos, constraints, índices)
-- Contrato API REST para **/api/clientes** (CRUD + selector)
-- DTOs request/response y reglas de validación
-- Reglas de seguridad (Admin gestiona Clientes; Chofer no)
-- Decisiones arquitectónicas documentadas (ADR corto)
+- Modelo de datos PostgreSQL 16+ (tabla clientes + constraints + índices).
+- Script SQL incremental + rollback manual (solo especificación, no código aún).
+- Contrato API REST (endpoints, DTOs request/response, errores).
+- Reglas de negocio y validaciones (qué va en DTO vs Service).
+- Seguridad mínima (admin vs chofer).
+- Actualizaciones a memory-bank: 04-api-documentation.md (sección Clientes), 06-data-model.md (tabla clientes).
 
-## Decisiones humanas tomadas
+No inventes campos fuera de lo definido: nombre/razón social, teléfono, email, dirección principal, tipo (común/abono). Código interno/externo NO aplica. Si falta algo, proponé como "opcional" y marcá supuesto.
+
+**Issue:** Objetivo: gestionar clientes para asociarlos a pedidos (común/abono). Alcance: ABM, tipo común/abono, datos mínimos. Criterios: admin crea cliente → listados y selector en pedido; cliente abono → modalidad abono en pedidos; validación nombre no vacío. Impacto: Backend CRUD + DTOs; Frontend ABM. Subtareas T1–T4 y dependencias.
+
+## Output (resumen y extractos)
+
+La IA generó:
+
+**1) Contrato API — Clientes**
+- Recurso `/api/clientes`. GET listado paginado (content, totalElements, totalPages, size, number); GET /selector (array id, razonSocial, tipo); GET /{id}; POST (body con razonSocial, telefono, email, direccionPrincipal, tipo); PUT /{id}; DELETE /{id} (204). Códigos 400/401/403/404/422/409.
+
+**2) Modelo de datos**
+- Tabla `clientes`: id (BIGINT identity), razon_social VARCHAR(255) NOT NULL, telefono, email, direccion_principal, tipo VARCHAR(10) NOT NULL CHECK (COMUN|ABONO). Índices: idx_clientes_razon_social, idx_clientes_tipo. Scripts incremental y rollback con convención YYYYMMDD_issueId_descripcion.
+
+**3) Reglas**
+- Validación nombre no vacío en DTO y Service. Errores estándar (code, message, details, timestamp). Seguridad: admin para ABM (pendiente implementación).
+
+Luego se actualizaron 04 y 06 con la sección Clientes; después se alineó el campo a `nombre` (razon_social → nombre en DB y API).
+
+## Decisión humana
 - Aceptar un único campo `nombre` (nombre/razón social) en v1.
-- Implementar `tipo` como VARCHAR + CHECK (no enum nativo de PostgreSQL).
-- No definir unicidad de nombre en v1.
-- Mantener eliminación física de clientes en v1.
-- Separar endpoint liviano `/selector` para combos.
+- Tipo VARCHAR + CHECK (no enum nativo PostgreSQL).
+- Sin unicidad de nombre en v1; eliminación física; endpoint `/selector` separado.
 
-## Impacto en el repositorio
-- Actualización de `memory-bank/04-api-documentation.md` (sección Clientes)
-- Actualización de `memory-bank/06-data-model.md` (tabla clientes)
-
-## Próximo paso
-Implementación técnica con:
-- **Agente 5 — Builder Backend** (T1 DB + T2 API)
-- Posteriormente **Agente 6 — Builder Frontend**
-
+## Impacto en el repo
+- memory-bank/04-api-documentation.md (sección Clientes).
+- memory-bank/06-data-model.md (tabla clientes).

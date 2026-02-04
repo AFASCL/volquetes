@@ -11,8 +11,10 @@ import type {
 
 function getErrorMessage(status: number, data: unknown): string {
   const err = data as ErrorResponse | undefined
-  if (err?.message) return err.message
-  if (err?.details?.length) return err.details.join('. ')
+  const parts: string[] = []
+  if (err?.message) parts.push(err.message)
+  if (err?.details?.length) parts.push(err.details.join('. '))
+  if (parts.length) return parts.join(' — ')
   switch (status) {
     case 400:
       return 'Datos inválidos.'

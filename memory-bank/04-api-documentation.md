@@ -108,26 +108,89 @@ Recurso: `/api/clientes` (plural). Solo campos definidos: nombre/razón social, 
 
 ---
 
-### <Nombre del recurso>
-#### GET /api/<recurso>
-- Descripción:
-- Permiso requerido:
-- Query params:
+### Volquetes
+
+Recurso: `/api/volquetes`. Campos: código interno, código externo, estado actual (DISPONIBLE | EN_CLIENTE | EN_TRANSITO | FUERA_DE_SERVICIO). QR se genera en UI desde codigoExterno. Permiso: admin para ABM (mismo criterio que clientes).
+
+#### GET /api/volquetes
+- Descripción: Listado paginado de volquetes con filtro opcional por estado.
+- Permiso requerido: admin.
+- Query params: `page`, `size`, `sort` (estándar Pageable); `estado` (opcional): DISPONIBLE | EN_CLIENTE | EN_TRANSITO | FUERA_DE_SERVICIO. Si se omite, se listan todos.
 - Response 200:
 ```json
-{ }
+{
+  "content": [
+    {
+      "id": 1,
+      "codigoInterno": "string",
+      "codigoExterno": "string",
+      "estadoActual": "DISPONIBLE"
+    }
+  ],
+  "totalElements": 0,
+  "totalPages": 0,
+  "size": 20,
+  "number": 0
+}
 ```
-- Errores: 400/401/403/404
+- Errores: 400 (estado no permitido u otros params inválidos), 401/403
 
-#### POST /api/<recurso>
-- Descripción:
-- Permiso requerido:
+#### GET /api/volquetes/{id}
+- Descripción: Detalle de un volquete por ID.
+- Permiso requerido: admin.
+- Response 200:
+```json
+{
+  "id": 1,
+  "codigoInterno": "string",
+  "codigoExterno": "string",
+  "estadoActual": "DISPONIBLE"
+}
+```
+- Errores: 401/403/404
+
+#### POST /api/volquetes
+- Descripción: Crear volquete. Estado inicial en cuerpo; si se omite, DISPONIBLE.
+- Permiso requerido: admin.
 - Request:
 ```json
-{ }
+{
+  "codigoInterno": "string",
+  "codigoExterno": "string",
+  "estadoInicial": "DISPONIBLE"
+}
 ```
-- Response 201:
+- codigoInterno, codigoExterno: obligatorios, no vacíos. estadoInicial: opcional (default DISPONIBLE).
+- Response 201: mismo cuerpo que GET /api/volquetes/{id} (Location: /api/volquetes/{id}).
+- Errores: 400/401/403/409/422 (409 código duplicado; 422 validación negocio)
+
+#### PUT /api/volquetes/{id}
+- Descripción: Actualizar volquete. Solo codigoInterno y codigoExterno (no estado; usar PATCH estado).
+- Permiso requerido: admin.
+- Request: codigoInterno, codigoExterno (estadoInicial se ignora en PUT).
+- Response 200: mismo cuerpo que GET /api/volquetes/{id}.
+- Errores: 400/401/403/404/409/422
+
+#### DELETE /api/volquetes/{id}
+- Descripción: Eliminar volquete (hard delete). 409 si en el futuro hubiera pedidos asociados.
+- Permiso requerido: admin.
+- Response 204: sin cuerpo.
+- Errores: 401/403/404 (y 409 cuando se defina restricción por pedidos)
+
+#### PATCH /api/volquetes/{id}/estado
+- Descripción: Cambiar estado actual. Actualiza volquetes.estado_actual e inserta en volquete_estado_historial.
+- Permiso requerido: admin.
+- Request:
 ```json
-{ }
+{
+  "estado": "EN_CLIENTE",
+  "origen": "MANUAL"
+}
 ```
-- Errores: 400/401/403/409/422
+- estado: obligatorio (DISPONIBLE | EN_CLIENTE | EN_TRANSITO | FUERA_DE_SERVICIO). origen: opcional (MANUAL | PEDIDO); si se omite, NULL en historial.
+- Response 200: mismo cuerpo que GET /api/volquetes/{id} (estado actualizado).
+- Errores: 400 (estado/origen inválido), 401/403/404/422 (422 transición no permitida por reglas de negocio)
+
+**DTOs Volquetes:** VolqueteRequest (codigoInterno, codigoExterno; POST además estadoInicial opcional). VolqueteResponse (id, codigoInterno, codigoExterno, estadoActual). VolqueteEstadoRequest (estado, origen opcional). Listado: Page&lt;VolqueteResponse&gt; (content, totalElements, totalPages, size, number).
+
+**Códigos de error esperados:** 400 (params/JSON/estado inválido), 401, 403, 404 (recurso no encontrado), 409 (código duplicado), 422 (validación/transición), 500.

@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import * as clientesApi from '@/services/api/clientes'
 import type { ClienteResponse, ClienteRequest, ClienteTipo } from '@/types/clientes'
+
+const router = useRouter()
+
+function ensureAdmin() {
+  const profileRaw = localStorage.getItem('auth_profile')
+  const profile = profileRaw ? JSON.parse(profileRaw) : null
+  const isAdmin = profile?.role === 'ROLE_ADMIN'
+  if (!isAdmin) router.push('/401')
+}
 
 const TIPOS: { value: ClienteTipo; label: string }[] = [
   { value: 'COMUN', label: 'Común' },
@@ -141,7 +151,22 @@ async function confirmDelete(row: ClienteResponse) {
   }
 }
 
-onMounted(() => loadList())
+async function prevPage() {
+  if (page.value === 0) return
+  page.value--
+  await loadList()
+}
+
+async function nextPage() {
+  if (page.value >= totalPages.value - 1) return
+  page.value++
+  await loadList()
+}
+
+onMounted(() => {
+  ensureAdmin()
+  loadList()
+})
 </script>
 
 <template>
@@ -260,7 +285,7 @@ onMounted(() => loadList())
             type="button"
             :disabled="page === 0"
             class="rounded border border-gray-300 bg-white px-3 py-1 disabled:opacity-50 hover:bg-gray-50"
-            @click="page--; loadList()"
+            @click="prevPage"
           >
             Anterior
           </button>
@@ -268,7 +293,7 @@ onMounted(() => loadList())
             type="button"
             :disabled="page >= totalPages - 1"
             class="rounded border border-gray-300 bg-white px-3 py-1 disabled:opacity-50 hover:bg-gray-50"
-            @click="page++; loadList()"
+            @click="nextPage"
           >
             Siguiente
           </button>
