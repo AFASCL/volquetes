@@ -14,8 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,5 +82,23 @@ class PedidoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.clienteNombre").value("Cliente SA"));
+    }
+
+    @Test
+    void patch_estado_returns200() throws Exception {
+        String body = """
+                {"estado":"ASIGNADO","choferId":1,"camionId":1,"fechaEntregaPrevista":"2026-02-10T14:00:00.000+00:00"}
+                """;
+        PedidoResponse response = new PedidoResponse();
+        response.setId(1L);
+        response.setEstado(PedidoEstado.ASIGNADO);
+        when(pedidoService.cambiarEstado(eq(1L), any())).thenReturn(response);
+
+        mockMvc.perform(patch("/api/pedidos/1/estado")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.estado").value("ASIGNADO"));
     }
 }

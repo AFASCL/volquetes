@@ -16,6 +16,14 @@ public class VolqueteEstadoRequest {
     /** Opcional: MANUAL | PEDIDO. Si se omite, se persiste NULL en historial. */
     private OrigenEstado origen;
 
+    public VolqueteEstadoRequest() {
+    }
+
+    public VolqueteEstadoRequest(VolqueteEstado estado, OrigenEstado origen) {
+        this.estado = estado;
+        this.origen = origen;
+    }
+
     public VolqueteEstado getEstado() {
         return estado;
     }

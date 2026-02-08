@@ -2,6 +2,7 @@ package com.afascl.volquetes.controller;
 
 import com.afascl.volquetes.domain.BadRequestException;
 import com.afascl.volquetes.domain.PedidoEstado;
+import com.afascl.volquetes.dto.PedidoEstadoRequest;
 import com.afascl.volquetes.dto.PedidoRequest;
 import com.afascl.volquetes.dto.PedidoResponse;
 import com.afascl.volquetes.service.PedidoService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -62,6 +64,11 @@ public class PedidoController {
     @PutMapping("/{id}")
     public ResponseEntity<PedidoResponse> update(@PathVariable Long id, @Valid @RequestBody PedidoRequest request) {
         return ResponseEntity.ok(pedidoService.update(id, request));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ResponseEntity<PedidoResponse> cambiarEstado(@PathVariable Long id, @Valid @RequestBody PedidoEstadoRequest request) {
+        return ResponseEntity.ok(pedidoService.cambiarEstado(id, request));
     }
 
     private static Optional<PedidoEstado> parseEstado(String value) {

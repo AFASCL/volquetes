@@ -1,15 +1,21 @@
 package com.afascl.volquetes.service;
 
+import com.afascl.volquetes.domain.Camion;
+import com.afascl.volquetes.domain.Chofer;
 import com.afascl.volquetes.domain.Cliente;
 import com.afascl.volquetes.domain.ClienteNotFoundException;
+import com.afascl.volquetes.domain.Pedido;
 import com.afascl.volquetes.domain.PedidoConflictException;
 import com.afascl.volquetes.domain.PedidoEstado;
 import com.afascl.volquetes.domain.PedidoNotFoundException;
 import com.afascl.volquetes.domain.PedidoValidationException;
 import com.afascl.volquetes.domain.Volquete;
 import com.afascl.volquetes.domain.VolqueteNotFoundException;
+import com.afascl.volquetes.dto.PedidoEstadoRequest;
 import com.afascl.volquetes.dto.PedidoRequest;
 import com.afascl.volquetes.dto.PedidoResponse;
+import com.afascl.volquetes.repository.CamionRepository;
+import com.afascl.volquetes.repository.ChoferRepository;
 import com.afascl.volquetes.repository.ClienteRepository;
 import com.afascl.volquetes.repository.PedidoRepository;
 import com.afascl.volquetes.repository.VolqueteRepository;
@@ -21,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +47,12 @@ class PedidoServiceTest {
     private ClienteRepository clienteRepository;
     @Mock
     private VolqueteRepository volqueteRepository;
+    @Mock
+    private ChoferRepository choferRepository;
+    @Mock
+    private CamionRepository camionRepository;
+    @Mock
+    private VolqueteService volqueteService;
 
     @InjectMocks
     private PedidoService pedidoService;
@@ -143,5 +156,97 @@ class PedidoServiceTest {
         assertThatThrownBy(() -> pedidoService.findById(999L))
                 .isInstanceOf(PedidoNotFoundException.class)
                 .hasMessageContaining("999");
+    }
+
+    // --- T3 cambiarEstado ---
+
+    @Test
+    void cambiarEstado_nuevoToAsignado_returnsResponse() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1L);
+        pedido.setEstado(PedidoEstado.NUEVO);
+        Cliente cliente = new Cliente();
+        cliente.setId(1L);
+        cliente.setNombre("Cliente");
+        pedido.setCliente(cliente);
+        Volquete volquete = new Volquete();
+        volquete.setId(10L);
+        volquete.setCodigoInterno("V01");
+        pedido.setVolquete(volquete);
+        Chofer chofer = new Chofer();
+        chofer.setId(5L);
+        Camion camion = new Camion();
+        camion.setId(7L);
+
+        PedidoEstadoRequest request = new PedidoEstadoRequest();
+        request.setEstado(PedidoEstado.ASIGNADO);
+        request.setChoferId(5L);
+        request.setCamionId(7L);
+        request.setFechaEntregaPrevista(OffsetDateTime.now());
+
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+        when(choferRepository.findById(5L)).thenReturn(Optional.of(chofer));
+        when(camionRepository.findById(7L)).thenReturn(Optional.of(camion));
+        when(pedidoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        PedidoResponse response = pedidoService.cambiarEstado(1L, request);
+
+        assertThat(response.getEstado()).isEqualTo(PedidoEstado.ASIGNADO);
+        verify(pedidoRepository).save(any());
+    }
+
+    @Test
+    void cambiarEstado_pedidoNotFound_throws404() {
+        PedidoEstadoRequest request = new PedidoEstadoRequest();
+        request.setEstado(PedidoEstado.CANCELADO);
+        when(pedidoRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> pedidoService.cambiarEstado(999L, request))
+                .isInstanceOf(PedidoNotFoundException.class)
+                .hasMessageContaining("999");
+    }
+
+    @Test
+    void cambiarEstado_cerrado_throws422() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1L);
+        pedido.setEstado(PedidoEstado.CERRADO);
+        PedidoEstadoRequest request = new PedidoEstadoRequest();
+        request.setEstado(PedidoEstado.ASIGNADO);
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+
+        assertThatThrownBy(() -> pedidoService.cambiarEstado(1L, request))
+                .isInstanceOf(PedidoValidationException.class)
+                .hasMessageContaining("cerrado o cancelado");
+    }
+
+    @Test
+    void cambiarEstado_transicionNoPermitida_throws422() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1L);
+        pedido.setEstado(PedidoEstado.NUEVO);
+        PedidoEstadoRequest request = new PedidoEstadoRequest();
+        request.setEstado(PedidoEstado.ENTREGADO);
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+
+        assertThatThrownBy(() -> pedidoService.cambiarEstado(1L, request))
+                .isInstanceOf(PedidoValidationException.class)
+                .hasMessageContaining("Transición no permitida");
+    }
+
+    @Test
+    void cambiarEstado_asignadoSinChofer_throws422() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1L);
+        pedido.setEstado(PedidoEstado.NUEVO);
+        PedidoEstadoRequest request = new PedidoEstadoRequest();
+        request.setEstado(PedidoEstado.ASIGNADO);
+        request.setCamionId(7L);
+        request.setFechaEntregaPrevista(OffsetDateTime.now());
+        when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
+
+        assertThatThrownBy(() -> pedidoService.cambiarEstado(1L, request))
+                .isInstanceOf(PedidoValidationException.class)
+                .hasMessageContaining("choferId");
     }
 }
