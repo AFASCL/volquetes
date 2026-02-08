@@ -1,0 +1,22 @@
+# Render Blueprint — Backend (Supabase como DB, configurar env en Dashboard)
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: volquetes-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/health
+    # Variables de entorno: configurar en Render Dashboard (no commitear secretos)
+    # DB_URL, DB_USERNAME, DB_PASSWORD → desde Supabase (Connection string)
+    # CORS_ALLOWED_ORIGINS → https://tu-app.vercel.app (y previews si quieres)
+    envVars:
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
