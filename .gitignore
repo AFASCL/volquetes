@@ -16,6 +16,7 @@ target/
 .DS_Store
 Thumbs.db
 
-# Env
+# Env (mantener .env.example para documentar variables)
 .env
 .env.*
+!.env.example

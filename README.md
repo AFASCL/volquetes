@@ -203,6 +203,18 @@ El proceso exige:
 
 ---
 
+## 🚀 Despliegue (Supabase + Render + Vercel)
+
+Para publicar la app en la nube:
+
+- **Base de datos:** Supabase (PostgreSQL)
+- **Backend:** Render
+- **Frontend:** Vercel (apuntando a la URL del backend en Render)
+
+Guía paso a paso en **[docs/DEPLOY.md](docs/DEPLOY.md)**.
+
+---
+
 ## ✅ Regla final
 
 > La IA acelera.  
