@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${cors.allowed-origins:http://localhost:5173}")
-    private String allowedOrigins;
+    private String allowedOrigins; // Producción: varias URLs separadas por coma (ej. https://xxx.vercel.app)
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
