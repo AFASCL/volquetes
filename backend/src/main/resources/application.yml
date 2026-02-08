@@ -10,10 +10,10 @@ spring:
     password: ${DB_PASSWORD:test123}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 4
       minimum-idle: 1
       idle-timeout: 600000       # 10 min
-      max-lifetime: 1200000      # 20 min  (más corto para evitar conexiones muertas)
+      max-lifetime: 300000      # 20 min  (más corto para evitar conexiones muertas)
       connection-timeout: 30000  # 30s
       validation-timeout: 5000
       keepalive-time: 300000     # 5 min (opcional, ayuda con idle)
@@ -28,6 +28,8 @@ spring:
         format_sql: true
         jdbc:
           batch_size: 25
+          prepare_threshold: 0
+          use_get_generated_keys: false
   jackson:
     serialization:
       write-dates-as-timestamps: false
