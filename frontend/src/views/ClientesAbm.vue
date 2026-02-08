@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import ActionIcons from '@/components/icons/ActionIcons.vue'
+import AppAlert from '@/components/AppAlert.vue'
+import AppEmptyState from '@/components/AppEmptyState.vue'
+import AppErrorState from '@/components/AppErrorState.vue'
+import AppFormError from '@/components/AppFormError.vue'
 import { useRouter } from 'vue-router'
 import * as clientesApi from '@/services/api/clientes'
 import type { ClienteResponse, ClienteRequest, ClienteTipo } from '@/types/clientes'
@@ -172,127 +177,92 @@ onMounted(() => {
 <template>
   <div class="space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <h1 class="text-2xl font-semibold text-gray-800">Clientes</h1>
-      <button
-        type="button"
-        class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        @click="openCreate"
-      >
-        Nuevo
+      <h1 class="page-title-app">Clientes</h1>
+      <button type="button" class="btn-primary" title="Nuevo cliente" @click="openCreate">
+        <ActionIcons name="plus" class="h-5 w-5" />
+        <span>Nuevo</span>
       </button>
     </div>
 
-    <div
-      v-if="feedback"
-      :class="[
-        'rounded border p-3 text-sm',
-        feedback.type === 'success'
-          ? 'border-green-200 bg-green-50 text-green-800'
-          : 'border-red-200 bg-red-50 text-red-800',
-      ]"
-      role="alert"
-    >
-      {{ feedback.message }}
-    </div>
+    <AppAlert v-if="feedback" :type="feedback.type" :message="feedback.message" />
 
     <!-- Loading -->
     <div v-if="loading" class="flex justify-center py-12">
-      <p class="text-gray-500">Cargando...</p>
+      <p class="text-slate-500">Cargando...</p>
     </div>
 
     <!-- Error + retry -->
-    <div v-else-if="error" class="rounded border border-red-200 bg-red-50 p-6 text-center">
-      <p class="text-red-800">{{ error }}</p>
-      <button
-        type="button"
-        class="mt-4 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-        @click="loadList"
-      >
-        Reintentar
-      </button>
-    </div>
+    <AppErrorState v-else-if="error" :message="error" @retry="loadList" />
 
     <!-- Empty -->
-    <div
+    <AppEmptyState
       v-else-if="list.length === 0"
-      class="rounded border border-gray-200 bg-white p-12 text-center text-gray-600"
-    >
-      <p>No hay clientes. Creá uno con el botón Nuevo.</p>
-    </div>
+      message="No hay clientes."
+      hint="Creá uno con el botón Nuevo."
+    />
 
     <!-- Table -->
-    <div v-else class="overflow-x-auto rounded border border-gray-200 bg-white">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div v-else class="table-wrapper-app">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="thead-app">
           <tr>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-              Nombre
-            </th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-              Tipo
-            </th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-              Teléfono
-            </th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-              Email
-            </th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-              Dirección
-            </th>
-            <th scope="col" class="relative px-4 py-3">
+            <th scope="col" class="th-app">Nombre</th>
+            <th scope="col" class="th-app">Tipo</th>
+            <th scope="col" class="th-app">Teléfono</th>
+            <th scope="col" class="th-app">Email</th>
+            <th scope="col" class="th-app">Dirección</th>
+            <th scope="col" class="th-app relative">
               <span class="sr-only">Acciones</span>
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-          <tr v-for="row in list" :key="row.id" class="hover:bg-gray-50">
-            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-900">{{ row.nombre }}</td>
-            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ row.tipo }}</td>
-            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ row.telefono ?? '—' }}</td>
-            <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{{ row.email ?? '—' }}</td>
-            <td class="max-w-xs truncate px-4 py-3 text-sm text-gray-600">
+        <tbody class="divide-y divide-slate-200 bg-white">
+          <tr v-for="row in list" :key="row.id" class="hover:bg-slate-50">
+            <td class="td-app">{{ row.nombre }}</td>
+            <td class="td-muted-app">{{ row.tipo }}</td>
+            <td class="td-muted-app">{{ row.telefono ?? '—' }}</td>
+            <td class="td-muted-app">{{ row.email ?? '—' }}</td>
+            <td class="max-w-xs truncate px-4 py-3 text-sm text-slate-600">
               {{ row.direccionPrincipal ?? '—' }}
             </td>
-            <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
-              <button
-                type="button"
-                class="text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded mr-2"
-                aria-label="Editar cliente"
-                @click="openEdit(row)"
-              >
-                Editar
-              </button>
-              <button
-                type="button"
-                class="text-red-600 hover:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
-                aria-label="Eliminar cliente"
-                @click="confirmDelete(row)"
-              >
-                Eliminar
-              </button>
+            <td class="whitespace-nowrap px-4 py-3 text-right">
+              <div class="inline-flex items-center gap-1">
+                <button
+                  type="button"
+                  class="rounded-lg p-2 text-slate-500 transition-app hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                  aria-label="Editar cliente"
+                  title="Editar"
+                  @click="openEdit(row)"
+                >
+                  <ActionIcons name="pencil" class="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  class="rounded-lg p-2 text-slate-500 transition-app hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-200"
+                  aria-label="Eliminar cliente"
+                  title="Eliminar"
+                  @click="confirmDelete(row)"
+                >
+                  <ActionIcons name="trash" class="h-4 w-4" />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
       <div
         v-if="totalPages > 1"
-        class="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-2 text-sm text-gray-500"
+        class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 px-4 py-2 text-sm text-slate-500"
       >
         <span>Página {{ page + 1 }} de {{ totalPages }} ({{ totalElements }} en total)</span>
         <div class="flex gap-2">
-          <button
-            type="button"
-            :disabled="page === 0"
-            class="rounded border border-gray-300 bg-white px-3 py-1 disabled:opacity-50 hover:bg-gray-50"
-            @click="prevPage"
-          >
+          <button type="button" :disabled="page === 0" class="btn-pagination" @click="prevPage">
             Anterior
           </button>
           <button
             type="button"
             :disabled="page >= totalPages - 1"
-            class="rounded border border-gray-300 bg-white px-3 py-1 disabled:opacity-50 hover:bg-gray-50"
+            class="btn-pagination"
             @click="nextPage"
           >
             Siguiente
@@ -309,77 +279,65 @@ onMounted(() => {
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-        <h2 id="modal-title" class="text-lg font-semibold text-gray-800">{{ modalTitle }}</h2>
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <h2 id="modal-title" class="text-lg font-semibold text-slate-800">{{ modalTitle }}</h2>
         <form @submit.prevent="submitForm" class="mt-4 space-y-4">
           <div>
-            <label for="form-nombre" class="block text-sm font-medium text-gray-700">Nombre *</label>
+            <label for="form-nombre" class="label-app">Nombre *</label>
             <input
               id="form-nombre"
               v-model="form.nombre"
               type="text"
               required
-              class="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="input-app"
               maxlength="255"
             />
           </div>
           <div>
-            <label for="form-tipo" class="block text-sm font-medium text-gray-700">Tipo</label>
-            <select
-              id="form-tipo"
-              v-model="form.tipo"
-              class="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            >
+            <label for="form-tipo" class="label-app">Tipo</label>
+            <select id="form-tipo" v-model="form.tipo" class="input-app">
               <option v-for="t in TIPOS" :key="t.value" :value="t.value">{{ t.label }}</option>
             </select>
           </div>
           <div>
-            <label for="form-telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+            <label for="form-telefono" class="label-app">Teléfono</label>
             <input
               id="form-telefono"
               v-model="form.telefono"
               type="text"
-              class="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="input-app"
               maxlength="50"
             />
           </div>
           <div>
-            <label for="form-email" class="block text-sm font-medium text-gray-700">Email</label>
+            <label for="form-email" class="label-app">Email</label>
             <input
               id="form-email"
               v-model="form.email"
               type="email"
-              class="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="input-app"
               maxlength="255"
             />
           </div>
           <div>
-            <label for="form-direccion" class="block text-sm font-medium text-gray-700"
-              >Dirección principal</label
-            >
+            <label for="form-direccion" class="label-app">Dirección principal</label>
             <input
               id="form-direccion"
               v-model="form.direccionPrincipal"
               type="text"
-              class="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="input-app"
               maxlength="500"
             />
           </div>
-          <p v-if="formError" class="text-sm text-red-600">{{ formError }}</p>
-          <div class="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              class="rounded border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @click="closeModal"
-            >
-              Cancelar
+          <AppFormError v-if="formError" :message="formError" />
+          <div class="flex justify-end gap-3 pt-4">
+            <button type="button" class="btn-secondary" @click="closeModal">
+              <ActionIcons name="x-mark" class="h-4 w-4" />
+              <span>Cancelar</span>
             </button>
-            <button
-              type="submit"
-              :disabled="submitting"
-              class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {{ submitting ? 'Guardando...' : 'Guardar' }}
+            <button type="submit" :disabled="submitting" class="btn-primary">
+              <ActionIcons name="check" class="h-4 w-4" />
+              <span>{{ submitting ? 'Guardando...' : 'Guardar' }}</span>
             </button>
           </div>
         </form>

@@ -5,6 +5,7 @@ import { apiRequest } from './client'
 import type {
   ClienteRequest,
   ClienteResponse,
+  ClienteSelectorItem,
   ClientesPageResponse,
   ErrorResponse,
 } from '@/types/clientes'
@@ -45,6 +46,14 @@ export async function listClientes(params?: {
   const { data, status } = await apiRequest<ClientesPageResponse>(path, { method: 'GET' })
   if (status >= 400) throw new Error(getErrorMessage(status, data))
   return data as ClientesPageResponse
+}
+
+export async function listClientesSelector(): Promise<ClienteSelectorItem[]> {
+  const { data, status } = await apiRequest<ClienteSelectorItem[]>('/api/clientes/selector', {
+    method: 'GET',
+  })
+  if (status >= 400) throw new Error(getErrorMessage(status, data))
+  return (Array.isArray(data) ? data : []) as ClienteSelectorItem[]
 }
 
 export async function getCliente(id: number): Promise<ClienteResponse> {

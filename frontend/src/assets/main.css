@@ -1,3 +1,83 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Suavizado global y scroll para layout 2026 */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Sistema de diseño — clases reutilizables (07-frontend-guidelines §9) */
+@layer components {
+  .input-app {
+    @apply mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 placeholder-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+  }
+
+  .input-app-sm {
+    @apply block rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+  }
+
+  .label-app {
+    @apply block text-sm font-medium text-slate-700;
+  }
+
+  .helper-app {
+    @apply mt-1.5 text-xs text-slate-500;
+  }
+
+  .card-app {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .table-wrapper-app {
+    @apply overflow-x-auto rounded-xl border border-slate-200 bg-white;
+  }
+
+  .thead-app {
+    @apply bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500;
+  }
+
+  .th-app {
+    @apply px-4 py-3;
+  }
+
+  .td-app {
+    @apply whitespace-nowrap px-4 py-3 text-sm text-slate-900;
+  }
+
+  .td-muted-app {
+    @apply whitespace-nowrap px-4 py-3 text-sm text-slate-600;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-app hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-app hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2;
+  }
+
+  .btn-pagination {
+    @apply rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 transition-app hover:bg-slate-50 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-slate-300;
+  }
+
+  .filter-bar-app {
+    @apply flex flex-wrap items-center gap-4 rounded-xl border border-slate-200 bg-white p-3;
+  }
+
+  .page-title-app {
+    @apply text-2xl font-semibold text-slate-800;
+  }
+}
+
+/* Transiciones y utilidades */
+@layer utilities {
+  .transition-app {
+    @apply transition-all duration-200 ease-out;
+  }
+  .logo-sin-fondo {
+    mix-blend-mode: multiply;
+  }
+}

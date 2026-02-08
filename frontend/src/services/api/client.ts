@@ -59,6 +59,56 @@ export async function apiRequest<T>(
   return { data, status: res.status }
 }
 
+/**
+ * Petición que devuelve el cuerpo como Blob (ej. CSV/Excel).
+ * 401/403 → mismo redirect que apiRequest.
+ * Si !res.ok → intenta leer mensaje de error (JSON o text) y lanza Error.
+ */
+export async function apiRequestBlob(
+  path: string,
+  options: RequestInit = {}
+): Promise<{ data: Blob; status: number }> {
+  const base = getBaseUrl()
+  const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? path : '/' + path}`
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  }
+
+  const token = getToken()
+  if (token) {
+    ;(headers as Record<string, string>)['Authorization'] = `Bearer ${token}`
+  }
+
+  const res = await fetch(url, { ...options, headers })
+
+  if (res.status === 401) {
+    window.location.hash = '#/login'
+    throw new Error('No autenticado')
+  }
+
+  if (res.status === 403) {
+    window.location.hash = '#/401'
+    throw new Error('Sin permiso')
+  }
+
+  if (!res.ok) {
+    const text = await res.text()
+    let msg = text
+    try {
+      const j = JSON.parse(text) as { message?: string }
+      if (j?.message) msg = j.message
+    } catch {
+      // leave msg as text
+    }
+    throw new Error(msg || `Error ${res.status}`)
+  }
+
+  const data = await res.blob()
+  return { data, status: res.status }
+}
+
 export function getApiBaseUrl(): string {
   return getBaseUrl()
 }

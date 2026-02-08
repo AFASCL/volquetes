@@ -29,6 +29,13 @@ export interface ClientesPageResponse {
   number: number
 }
 
+/** Item para selector (GET /api/clientes/selector). */
+export interface ClienteSelectorItem {
+  id: number
+  nombre: string
+  tipo: ClienteTipo
+}
+
 export interface ErrorResponse {
   code?: string
   message?: string

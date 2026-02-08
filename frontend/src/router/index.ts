@@ -55,6 +55,26 @@ const router = createRouter({
           name: 'clientes',
           component: () => import('@/views/ClientesAbm.vue'),
         },
+        {
+          path: 'volquetes',
+          name: 'volquetes',
+          component: () => import('@/views/VolquetesAbm.vue'),
+        },
+        {
+          path: 'volquetes-estado',
+          name: 'volquetes-estado',
+          component: () => import('@/views/VolquetesEstado.vue'),
+        },
+        {
+          path: 'pedidos',
+          name: 'pedidos',
+          component: () => import('@/views/PedidosAbm.vue'),
+        },
+        {
+          path: 'reportes',
+          name: 'reportes',
+          component: () => import('@/views/VolquetesAbm.vue'),
+        },
       ],
     },
     {

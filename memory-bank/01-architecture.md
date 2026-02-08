@@ -21,7 +21,7 @@ flowchart LR
 - Capas: Controller → Service → Repository
 - DTOs request/response (no exponer entidades JPA)
 - Errores consistentes vía @ControllerAdvice
-- **Seguridad:** PENDIENTE — auth/authz no implementado; endpoints abiertos. Restringir a Admin cuando se defina (memory-bank).
+- **Seguridad:** PENDIENTE — auth/authz no implementado; endpoints abiertos. Cuando se implemente: restringir por rol según memory-bank/04 (Admin para ABM; Admin o Chofer para pedidos según endpoint: POST/PUT solo Admin, GET y PATCH estado Admin o Chofer).
 
 ### Frontend
 - Composition API + TS por defecto
@@ -67,3 +67,31 @@ flowchart LR
 - Alternativas: Derivar estado actual como última fila de historial (más costoso en listados).
 - Trade-offs: Mantener estado_actual e historial sincronizados en cada transición (T4).
 - Impacto: T1 modelo, T2 lectura, T4 escritura en ambas tablas en una transacción.
+
+### ADR-005 — Pedidos: estado en VARCHAR + CHECK
+- Fecha: 2026-02-01
+- Decisión: Estado de pedido en columna `estado` VARCHAR con CHECK (NUEVO, ASIGNADO, ENTREGADO, RETIRADO, CERRADO, CANCELADO). En aplicación se usan enums.
+- Motivo: Consistencia con ADR-002 (volquetes); evolución vía script y código sin ENUM nativo PostgreSQL.
+- Impacto: Script DDL pedidos, entidades JPA, DTOs y validaciones.
+
+### ADR-006 — Unicidad volquete activo con índice único parcial
+- Fecha: 2026-02-01
+- Decisión: Garantizar “un volquete solo en un pedido activo” con UNIQUE (`volquete_id`) WHERE `estado` IN ('NUEVO','ASIGNADO','ENTREGADO') en tabla pedidos.
+- Motivo: Evitar doble asignación en DB y en aplicación; consultas de volquete libre simples.
+- Alternativas: Solo validación en Service (riesgo concurrencia); trigger (más complejidad).
+- Trade-offs: No se puede tener dos pedidos activos con el mismo volquete.
+- Impacto: Script pedidos (índice uk_pedidos_volquete_activo), Service validación.
+
+### ADR-007 — Chofer y camión como tablas catálogo mínimas (v1)
+- Fecha: 2026-02-01
+- Decisión: Tablas `choferes` y `camiones` con estructura mínima (id + nombre/patente); sin ABM en v1; solo selectores para asignación.
+- Motivo: Cubrir estado ASIGNADO sin retrasar MVP; ABM puede ser otro Issue.
+- Trade-offs: Datos cargados por script o manualmente hasta que exista pantalla.
+- Impacto: Script pedidos, endpoints GET /api/choferes/selector, GET /api/camiones/selector.
+
+### ADR-008 — Transiciones de pedido y estado de volquete en la misma transacción
+- Fecha: 2026-02-01
+- Decisión: Al cambiar pedido a ENTREGADO, RETIRADO o CANCELADO, la actualización de `volquetes.estado_actual` y la inserción en `volquete_estado_historial` (origen PEDIDO) se ejecutan en la misma transacción que el update del pedido.
+- Motivo: Consistencia entre dominio pedidos e inventario; sin estados intermedios visibles.
+- Trade-offs: Service de pedidos depende de lógica/servicio de actualización de volquete/historial.
+- Impacto: Backend T3 (transiciones de estado de pedidos).
