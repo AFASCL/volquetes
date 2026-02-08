@@ -1,120 +1,205 @@
-<<<<<<< HEAD
-# volquetes
-=======
-# 📦 Proyecto — Desarrollo con Cursor + IA
+# 📦 Volquetes — Proyecto Final (IA Engineer) + Metodología de Desarrollo con Cursor 2.x
 
-Este repositorio utiliza un **sistema de desarrollo de software asistido por IA**
-basado en **Cursor 2.0**, agentes especializados y reglas automáticas.
+Este repositorio es **doble propósito**:
 
-El objetivo es:
-- acelerar el desarrollo
-- reducir errores
-- mantener trazabilidad y calidad
-- evitar improvisación con IA
+1) **Producto:** construir un sistema funcional para la **gestión integral de una empresa de volquetes** (inventario, pedidos, choferes, pagos, etc.).  
+2) **Proceso:** diseñar y aplicar una **metodología profesional de desarrollo asistido por IA** basada en **Cursor 2.0**, con reglas, agentes y documentación viva.
+
+> El objetivo real del Trabajo Final no es solo “programar un sistema”,  
+> sino construir un **modelo de ingeniería de software replicable** que luego pueda aplicar en mi trabajo profesional en AFA SCL.
+
+---
+
+## 🎯 Objetivo del sistema (Producto)
+
+El sistema permite administrar una empresa de volquetes que inicia con:
+- 1 camión + pluma
+- ~30 volquetes (contenedores)
+- 2 perfiles: **Admin** y **Chofer**
+
+La plataforma está pensada para crecer a futuro (más camiones, más choferes, más volquetes).
+
+---
+
+## 🧩 Alcance v1 (MVP)
+
+Incluye:
+- Gestión de clientes (común / abono)
+- Inventario de volquetes (ABM + estados)
+- Gestión de pedidos (entrega / retiro)
+- Asignación de chofer y camión (v1 mínima)
+- Dashboard para chofer (hoja de ruta mobile)
+- Control de pagos simple (pago / no pagó)
+- Control de permanencia del volquete en cliente (semáforo por días)
+- Reportes básicos + exportación a Excel/CSV
+
+No incluye (v2+):
+- Optimización avanzada de rutas (ej. camión con 3 volquetes vacíos)
+- Firma digital + envío PDF con logo
+- Servicios especiales (bobcat, demoliciones, venta de materiales)
+- Workflows complejos / permisos granulares
+- Multi-camión con logística avanzada
+
+---
+
+## 🧠 Objetivo del repositorio (Proceso)
+
+Este repo implementa un sistema de trabajo que intenta resolver el problema real de la IA aplicada al desarrollo:
+
+- evitar prompts improvisados
+- evitar que la IA invente reglas o endpoints
+- mantener trazabilidad (Issue → commits → scripts DB → docs → tests)
+- lograr que el proceso sea repetible por un equipo real
+
+El resultado es un “framework de trabajo” que puede adoptarse en otros proyectos.
 
 ---
 
 ## 🧠 Principios clave
 
 - Si no hay Issue, el trabajo no existe.
-- La IA **asiste**, no decide.
-- El proceso del equipo es la fuente de verdad.
-- Cursor debe obedecer reglas claras (no improvisar).
 - No se escribe código sin PRD y tickets definidos.
+- La IA **asiste**, no decide.
+- Cursor debe obedecer reglas claras (no improvisar).
+- El proceso del equipo es la fuente de verdad.
+- Las decisiones finales y la responsabilidad siguen siendo humanas.
 
 ---
 
-## 🗂️ Estructura clave del repo
+## 🗂️ Estructura del repo (Arquitectura de trabajo)
 
 ```text
-.github/            → workflow, estados, issue forms (proceso del equipo)
+.github/            → workflow del equipo, estados, labels, issue templates
 .cursor/rules/      → reglas automáticas que gobiernan a Cursor (IA)
-memory-bank/        → contexto vivo del proyecto (arquitectura, API, decisiones)
-AGENTS.md           → catálogo de agentes IA (roles y prompts)
-AI_USAGE.md         → cómo usa IA el equipo
-AI_CHEAT_SHEET.md   → guía rápida diaria
-backend/            → código Spring Boot
-frontend/           → código Vue 3
+memory-bank/        → documentación viva del proyecto (API, DB, arquitectura)
+AGENTS.md           → catálogo oficial de agentes IA (roles y prompts)
+AI_USAGE.md         → cómo se usa IA en el equipo (reglas operativas)
+AI_CHEAT_SHEET.md   → guía rápida diaria para trabajar con Cursor
+ai-log/             → registro auditable del uso de IA (para el curso)
+backend/            → backend Spring Boot (Java) + tests
+frontend/           → frontend Vue 3 + TypeScript + Pinia + Tailwind
+db/scripts/         → scripts SQL incrementales + rollback manual
 ```
 
 ---
 
-## 🤖 Agentes IA (resumen)
+## 🔁 Ciclo de vida del trabajo en GitHub (.github)
 
-| Agente | Rol | Quién lo usa |
-|------|-----|--------------|
-| 0 | Backlog Triage & Grooming | PM / Lead |
-| 1 | PRD Challenger | PM / Lead |
-| 2 | Use Case Designer | PM / Lead |
-| 3 | Tech Planner | PM / Lead |
-| 4 | Architect | PM / Lead |
-| 5 | Builder Backend | Dev Backend |
-| 6 | Builder Frontend | Dev Frontend |
-| 7 | Verifier (QA) | Lead / QA |
+El repo está diseñado para que el trabajo fluya siempre por etapas claras:
 
-> Detalle completo en `AGENTS.md`
+1. **Idea / Pedido crudo**
+2. **Issue creado** (en estado inicial)
+3. **PRD refinado** (agente 1)
+4. **Casos de uso** (agente 2, si aplica)
+5. **Plan técnico (T1..Tn)** (agente 3)
+6. **Diseño técnico / Arquitectura** (agente 4)
+7. **Implementación** (agentes 5 y 6)
+8. **QA / verificación** (agente 7)
+9. **Merge / entrega**
+
+> Esto se apoya en `.github/workflow.md` y `.github/STATES_AND_LABELS.md`  
+> para que el repositorio sea la fuente de verdad del estado real.
 
 ---
 
-## ⚙️ Uso de Cursor (día a día)
+## 🤖 Agentes IA (roles oficiales)
 
-### Para desarrolladores
-- Abrir el repo en Cursor
-- Tomar un Issue en estado **In progress**
-- En el chat de Cursor escribir simplemente:
+| Agente | Rol | Quién lo usa | Resultado |
+|------|-----|--------------|----------|
+| 0 | Backlog Triage & Grooming | PM / Lead | Ideas → Issues |
+| 1 | PRD Challenger | PM / Lead | Issue → PRD sólido |
+| 2 | Use Case Designer | PM / Lead | PRD → Casos de uso |
+| 3 | Tech Planner | PM / Lead | PRD → T1..Tn (tickets ejecutables) |
+| 4 | Architect | PM / Lead | Contratos API + DB + ADR |
+| 5 | Builder Backend | Dev Backend | Código backend + tests + SQL |
+| 6 | Builder Frontend | Dev Frontend | Código frontend + UX |
+| 7 | Verifier (QA) | Lead / QA | Checklist QA + riesgos |
+
+📌 Detalle completo en `AGENTS.md`
+
+---
+
+## ⚙️ Cursor 2.0 — Cómo se usa (día a día)
+
+### Para desarrollar (Backend/Frontend)
+
+1) Abrir el repo en Cursor  
+2) Tomar un Issue en estado **In progress**  
+3) En el chat de Cursor usar el agente correspondiente (5 o 6) y pegar el ticket:
 
 ```text
-Implementar este ticket:
+Actuá como Agente 5 — Builder Backend.
 
-<pegar Issue>
+Implementá este ticket:
+<pegar Issue/Ticket>
+```
+
+o
+
+```text
+Actuá como Agente 6 — Builder Frontend.
+
+Implementá este ticket:
+<pegar Issue/Ticket>
 ```
 
 Las reglas en `.cursor/rules/` hacen que Cursor:
-- respete arquitectura
-- no invente endpoints
-- use DTOs
-- siga convenciones de frontend
-- consulte `memory-bank/` antes de proponer cambios
+- respete arquitectura en capas
+- no invente endpoints ni campos
+- use DTOs y validaciones
+- maneje errores consistentemente
+- respete convenciones del router/auth en Vue
+- actualice el memory-bank cuando corresponda
 
-👉 **No escribir prompts largos.**
-
----
-
-### Para PM / Tech Lead
-- Usar agentes 0–4 y 7 **de forma explícita** (en Cursor o fuera).
-- Refinar Issues antes de pasar a Ready.
-- Mantener `memory-bank/` actualizado cuando haya decisiones relevantes.
+👉 La idea es **no escribir prompts largos**, sino que el repositorio ya sea el “prompt”.
 
 ---
 
-## 📚 Memory Bank
+### Para planificar y diseñar (PM / Tech Lead)
 
-La carpeta `memory-bank/` contiene el **contexto del proyecto**:
-- arquitectura
-- contratos API
-- modelo de datos
-- convenciones frontend
-- bitácora de decisiones
-
-Cursor debe consultar estos archivos antes de proponer cambios.
+- Los agentes 0–4 y 7 se usan explícitamente.
+- Se trabaja principalmente en:
+  - Issues de GitHub
+  - memory-bank/
+  - (opcional) ChatGPT cuando no se está dentro de Cursor
 
 ---
 
-## 🧠 AI Log (uso de IA)
+## 📚 Memory Bank (documentación viva)
 
-Este proyecto incluye un **registro explícito del uso de IA** para trazabilidad
-y evaluación del proceso de desarrollo.
+La carpeta `memory-bank/` es el **contexto vivo del proyecto**.  
+Cursor la debe leer antes de proponer cambios.
+
+Ejemplos:
+- `04-api-documentation.md` → contratos REST y DTOs
+- `06-data-model.md` → tablas, constraints, índices, scripts SQL
+- `01-architecture.md` → ADRs y decisiones técnicas
+
+---
+
+## 🧾 AI Log (solo para el curso)
+
+Este proyecto incluye un **registro explícito del uso de IA** para trazabilidad académica.
 
 La carpeta `ai-log/` contiene:
-- prompts utilizados (por agente)
+- prompts utilizados por agente
 - input / output resumido
 - decisiones humanas tomadas
 - impacto en el código o documentación
 
-Este registro demuestra que la IA:
-- asiste al proceso
-- no toma decisiones autónomas
-- es auditada y controlada por el desarrollador
+📌 Nota: en proyectos reales este log puede ser opcional.  
+En este Trabajo Final es parte del entregable y evidencia el proceso.
+
+---
+
+## 🧪 Calidad y tests (mínimo profesional)
+
+El proceso exige:
+- Unit tests en Services (backend)
+- Integration tests con MockMvc (backend)
+- QA manual checklist en frontend (y Vitest si existe)
+- Scripts SQL incrementales + rollback manual (sin Flyway/Liquibase)
+- Documentación actualizada en el mismo PR
 
 ---
 
@@ -123,4 +208,3 @@ Este registro demuestra que la IA:
 > La IA acelera.  
 > El humano decide.  
 > El Project dice la verdad.
->>>>>>> 0d8d742 (chore: bootstrap repo (cursor rules, memory bank, ai-log))
